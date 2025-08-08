@@ -93,9 +93,7 @@ def listar_clientes(session: Annotated[Session, Depends(get_session)]) -> list[C
 
 
 @app.get("/clientes/{cliente_id}", response_model=Cliente, summary="Obtém um cliente")
-def obter_cliente(
-    cliente_id: int, session: Annotated[Session, Depends(get_session)]
-) -> Cliente:
+def obter_cliente(cliente_id: int, session: Annotated[Session, Depends(get_session)]) -> Cliente:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente não encontrado")
@@ -153,9 +151,7 @@ def atualizar_cliente(
 @app.delete(
     "/clientes/{cliente_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Remove um cliente"
 )
-def remover_cliente(
-    cliente_id: int, session: Annotated[Session, Depends(get_session)]
-) -> None:
+def remover_cliente(cliente_id: int, session: Annotated[Session, Depends(get_session)]) -> None:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente não encontrado")
