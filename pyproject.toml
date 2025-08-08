@@ -5,13 +5,15 @@ target-version = ["py311", "py312"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-select = ["E", "F", "I", "W", "UP", "B"]
-ignore = []
 exclude = [
   ".venv",
   "build",
   "dist",
 ]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = []
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

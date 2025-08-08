@@ -74,7 +74,7 @@ def test_put_atualiza_e_409_se_duplicado():
     with temp_db_env():
         with make_client() as client:
             c1 = client.post("/clientes", json={"nome": "Ana", "email": "ana@ex.com"}).json()
-            c2 = client.post("/clientes", json={"nome": "Bia", "email": "bia@ex.com"}).json()
+            _ = client.post("/clientes", json={"nome": "Bia", "email": "bia@ex.com"}).json()
 
             r = client.put(f"/clientes/{c1['id']}", json={"nome": "Ana Souza"})
             assert r.status_code == 200

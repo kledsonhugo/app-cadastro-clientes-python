@@ -107,6 +107,30 @@ ruff check .
 black .
 ```
 
+## Makefile (atalhos úteis)
+
+Você pode usar os atalhos abaixo (requer `make`):
+
+```bash
+# cria venv (--copies) e instala dependências
+make setup
+
+# sobe a API (PORT pode ser customizada)
+make run PORT=8000
+
+# roda testes
+make test
+
+# checa lint e formatação
+make lint
+
+# corrige automaticamente o que for possível
+make fix
+
+# instala hooks do pre-commit (ruff/black)
+make precommit-install
+```
+
 ## CI
 
 Um workflow GitHub Actions (`.github/workflows/ci.yml`) executa lint, format-check e testes a cada push/PR.

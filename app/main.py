@@ -1,12 +1,11 @@
 import os
-from typing import List, Optional
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, HTTPException, status
-from sqlmodel import Field, Session, SQLModel, create_engine, select
-from pydantic import EmailStr
 from dotenv import load_dotenv
+from fastapi import Depends, FastAPI, HTTPException, status
+from pydantic import EmailStr
 from sqlalchemy.exc import IntegrityError
+from sqlmodel import create_engine, Field, SQLModel, Session, select
 
 
 load_dotenv()
@@ -30,7 +29,7 @@ class ClienteBase(SQLModel):
 
 
 class Cliente(ClienteBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     # Garante unicidade do email no banco
     email: EmailStr = Field(index=True, sa_column_kwargs={"unique": True})
 
@@ -40,8 +39,8 @@ class ClienteCreate(ClienteBase):
 
 
 class ClienteUpdate(SQLModel):
-    nome: Optional[str] = None
-    email: Optional[EmailStr] = None
+    nome: str | None = None
+    email: EmailStr | None = None
 
 
 def get_session():
@@ -88,8 +87,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="API Cadastro de Clientes", version="0.2.0", lifespan=lifespan)
 
 
-@app.get("/clientes", response_model=List[Cliente], summary="Lista todos os clientes")
-def listar_clientes(session: Session = Depends(get_session)) -> List[Cliente]:
+@app.get("/clientes", response_model=list[Cliente], summary="Lista todos os clientes")
+def listar_clientes(session: Session = Depends(get_session)) -> list[Cliente]:
     return session.exec(select(Cliente)).all()
 
 
