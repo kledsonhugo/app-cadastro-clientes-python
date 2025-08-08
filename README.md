@@ -58,14 +58,6 @@ Acesse a documentação interativa em:
 Execute os testes automatizados seguindo estes passos:
 
 ```bash
-# 1) Ative o ambiente virtual (caso ainda não esteja ativo)
-source .venv/bin/activate
-
-# 2) Garanta as dependências instaladas
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-
-# 3) Rode os testes (via módulo do Python)
 python -m pytest -q
 ```
 
@@ -98,38 +90,7 @@ Notas de execução dos testes:
 - A aplicação inicializa o engine no ciclo de vida (`lifespan`), com descarte no shutdown, evitando travas de arquivo.
 - O pytest está configurado no `pyproject.toml` para suprimir warnings de terceiros irrelevantes e incluir a raiz no `PYTHONPATH`.
 
-## Lint e formatação
 
-Checagem de lint com Ruff e formatação com Black:
-
-```bash
-ruff check .
-black .
-```
-
-## Makefile (atalhos úteis)
-
-Você pode usar os atalhos abaixo (requer `make`):
-
-```bash
-# cria venv (--copies) e instala dependências
-make setup
-
-# sobe a API (PORT pode ser customizada)
-make run PORT=8000
-
-# roda testes
-make test
-
-# checa lint e formatação
-make lint
-
-# corrige automaticamente o que for possível
-make fix
-
-# instala hooks do pre-commit (ruff/black)
-make precommit-install
-```
 
 ## CI
 

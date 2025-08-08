@@ -1,12 +1,12 @@
 import os
 from contextlib import asynccontextmanager
+from typing import Annotated
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, status
 from pydantic import EmailStr
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import create_engine, Field, SQLModel, Session, select
-
+from sqlmodel import Field, Session, SQLModel, create_engine, select
 
 load_dotenv()
 
@@ -88,12 +88,14 @@ app = FastAPI(title="API Cadastro de Clientes", version="0.2.0", lifespan=lifesp
 
 
 @app.get("/clientes", response_model=list[Cliente], summary="Lista todos os clientes")
-def listar_clientes(session: Session = Depends(get_session)) -> list[Cliente]:
+def listar_clientes(session: Annotated[Session, Depends(get_session)]) -> list[Cliente]:
     return session.exec(select(Cliente)).all()
 
 
 @app.get("/clientes/{cliente_id}", response_model=Cliente, summary="Obtém um cliente")
-def obter_cliente(cliente_id: int, session: Session = Depends(get_session)) -> Cliente:
+def obter_cliente(
+    cliente_id: int, session: Annotated[Session, Depends(get_session)]
+) -> Cliente:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente não encontrado")
@@ -106,21 +108,28 @@ def obter_cliente(cliente_id: int, session: Session = Depends(get_session)) -> C
     status_code=status.HTTP_201_CREATED,
     summary="Cria um cliente",
 )
-def criar_cliente(payload: ClienteCreate, session: Session = Depends(get_session)) -> Cliente:
+def criar_cliente(
+    payload: ClienteCreate, session: Annotated[Session, Depends(get_session)]
+) -> Cliente:
     cliente = Cliente.model_validate(payload)
     session.add(cliente)
     try:
         session.commit()
     except IntegrityError:
         session.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email já cadastrado")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email já cadastrado",
+        ) from None
     session.refresh(cliente)
     return cliente
 
 
 @app.put("/clientes/{cliente_id}", response_model=Cliente, summary="Atualiza um cliente")
 def atualizar_cliente(
-    cliente_id: int, payload: ClienteUpdate, session: Session = Depends(get_session)
+    cliente_id: int,
+    payload: ClienteUpdate,
+    session: Annotated[Session, Depends(get_session)],
 ) -> Cliente:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
@@ -133,7 +142,10 @@ def atualizar_cliente(
         session.commit()
     except IntegrityError:
         session.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email já cadastrado")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email já cadastrado",
+        ) from None
     session.refresh(cliente)
     return cliente
 
@@ -141,7 +153,9 @@ def atualizar_cliente(
 @app.delete(
     "/clientes/{cliente_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Remove um cliente"
 )
-def remover_cliente(cliente_id: int, session: Session = Depends(get_session)) -> None:
+def remover_cliente(
+    cliente_id: int, session: Annotated[Session, Depends(get_session)]
+) -> None:
     cliente = session.get(Cliente, cliente_id)
     if not cliente:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cliente não encontrado")
